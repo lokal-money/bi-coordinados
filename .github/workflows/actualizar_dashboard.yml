@@ -32,16 +32,14 @@ jobs:
             -H "Authorization: token ${{ secrets.DISPATCH_TOKEN }}" \
             "https://api.github.com/repos/lokal-money/datos-cp/contents/TXN_LM_CP.xlsx" \
             | python3 -c "import sys,json; print(json.load(sys.stdin)['download_url'])")
-          echo "URL: $DOWNLOAD_URL"
           curl -L \
             -H "Authorization: token ${{ secrets.DISPATCH_TOKEN }}" \
             "$DOWNLOAD_URL" \
             -o TXN_LM_CP.xlsx
-          file TXN_LM_CP.xlsx
-          du -sh TXN_LM_CP.xlsx
+          echo "Descargado: $(du -sh TXN_LM_CP.xlsx)"
 
       - name: Procesar datos y regenerar dashboard
-        run: python procesar_datos.py TXN_LM_CP.xlsx "COORDINADOS" "UTC-6"
+        run: python procesar_datos.py TXN_LM_CP.xlsx "COORDINADOS" "UTC-6" "${{ secrets.DASHBOARD_PASSWORD }}"
 
       - name: Limpiar archivo de datos
         run: rm -f TXN_LM_CP.xlsx
